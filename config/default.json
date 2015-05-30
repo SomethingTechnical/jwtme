@@ -1,0 +1,11 @@
+{
+	"jwtme": {
+		"secret": "Shhhh",
+		"expiresInMinutes": 5,
+		"scopes": [{
+			"name": "users",
+			"route": "/users",
+			"access": ["GET", "POST"]
+		}]
+	}
+}

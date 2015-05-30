@@ -1,0 +1,30 @@
+{
+  "name": "jwtme",
+  "version": "0.1.0",
+  "description": "Dead Simple api authentication system",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/progressworks/jwtme.git"
+  },
+  "keywords": [
+    "api",
+    "auth",
+    "secure"
+  ],
+  "author": "gouthamve",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/progressworks/jwtme/issues"
+  },
+  "homepage": "https://github.com/progressworks/jwtme#readme",
+  "dependencies": {
+    "config": "^1.13.0",
+    "express": "^4.12.4",
+    "jsonwebtoken": "^5.0.1",
+    "lodash": "^3.9.3"
+  }
+}
