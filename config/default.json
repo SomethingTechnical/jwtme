@@ -7,6 +7,10 @@
 			"route": "/users",
 			"methods": ["GET", "POST"]
 		}],
-		"defaultscopes": ["/"]
+		"defaultscopes": ["/"],
+		"throttle": {
+			"rate": 5,
+			"expiry": 86400
+		}
 	}
 }

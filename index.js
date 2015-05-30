@@ -6,7 +6,7 @@ var config = require('config');
 
 var secret = config.get('jwtme.secret');
 
-app.get('/aa', jwtme.authenticate, function (req, res) {
+app.get('/', jwtme.authenticate, jwtme.throttle, function (req, res) {
   res.send('Hello World!');
 });
 

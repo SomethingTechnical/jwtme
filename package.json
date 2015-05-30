@@ -24,7 +24,11 @@
   "dependencies": {
     "config": "^1.13.0",
     "express": "^4.12.4",
+    "hiredis": "^0.4.0",
     "jsonwebtoken": "^5.0.1",
-    "lodash": "^3.9.3"
+    "lodash": "^3.9.3",
+    "redis": "^0.12.1",
+    "redis-throttle": "0.0.1",
+    "tokenthrottle-redis": "^1.1.0"
   }
 }
