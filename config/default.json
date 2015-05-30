@@ -6,6 +6,7 @@
 			"name": "users",
 			"route": "/users",
 			"access": ["GET", "POST"]
-		}]
+		}],
+		"defaultscopes": ["/"]
 	}
 }

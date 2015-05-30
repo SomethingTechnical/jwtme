@@ -10,6 +10,7 @@ jwt.create = function (payload, secret, options) {
 		options = {};
 	}
 	options.expiresInMinutes = options.expiresInMinutes || config.get('jwtme.expiresInMinutes');
+	payload.scopes = payload.scopes || [];
 	return jsonwebtoken.sign(payload, secret, options);
 };
 
@@ -34,34 +35,35 @@ jwt.authenticate = function(req, res, next) {
 		      "message": "Error decoding the token"
 		    });
 			} else {
-				if (decoded.scopes) {
-					var scopeConfig = config.get('jwtme.scopes');
-					if (scopeConfig) {
-						if(_.find(decoded.scopes, function(scope) {
-							return scope == currentScope(scopeConfig, req.route.path);
-						})) {
-							next();
-						} else {
-							res.status(401);
-					    res.json({
-					      "status": 401,
-					      "message": "No access to this scope"
-					    });
-						}
-					} else {
-						next();
-					}
-				} else {
+				if(validScope(decoded.scopes, req) || defaultScope(req)) {
 					next();
+				} else {
+					res.status(401);
+			    res.json({
+			      "status": 401,
+			      "message": "No Access to this scope"
+			    });
 				}
 			}
 		});
 	}
 
+	var defaultScope = function(req) {
+		return _.find(config.get('jwtme.defaultscopes'), function(route) {
+			return route == req.route.path;
+		})
+	}
+
+	var validScope = function(scopes, req) {
+		return _.find(scopes, function(scope) {
+			return scope == currentScope(config.get('jwtme.scopes'), req.route.path).name;
+		})
+	}
+
 	var currentScope = function(scopeConfig, url) {
-		return _.result(_.find(scopeConfig, function(scope) {
+		return _.find(scopeConfig, function(scope) {
 		  return scope.route == url;
-		}), 'name');
+		});
 	}
 }
 
