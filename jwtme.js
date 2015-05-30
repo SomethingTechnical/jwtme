@@ -56,7 +56,14 @@ jwt.authenticate = function(req, res, next) {
 
 	var validScope = function(scopes, req) {
 		return _.find(scopes, function(scope) {
-			return scope == currentScope(config.get('jwtme.scopes'), req.route.path).name;
+			var currScope = currentScope(config.get('jwtme.scopes'), req.route.path);
+			if(scope == currScope.name) {
+				for(i=0; i < currScope.methods.length; i++) {
+					return req.method == currScope.methods[i];
+				}
+			} else {
+				return false;
+			}
 		})
 	}
 
