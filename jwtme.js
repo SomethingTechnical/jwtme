@@ -33,25 +33,40 @@ jwtme.authenticate = function(req, res, next) {
     });
     return;
 	} else {
-		jsonwebtoken.verify(token, secret, function(err, decoded) {
+		redisClient.get(token, function(err, reply) {
 			if(err) {
-				res.status(401);
-		    res.json({
+				console.log(err);
+				return res.send(500);
+			}
+
+			if(reply) {
+				res.json({
 		      "status": 401,
 		      "message": "Token Invalid"
 		    });
 			} else {
-				if(validScope(decoded.scopes, req) || defaultScope(req)) {
-					next();
-				} else {
-					res.status(401);
-			    res.json({
-			      "status": 401,
-			      "message": "No Access to this scope"
-			    });
-				}
+				jsonwebtoken.verify(token, secret, function(err, decoded) {
+					if(err) {
+						res.status(401);
+				    res.json({
+				      "status": 401,
+				      "message": "Token Invalid"
+				    });
+					} else {
+						if(validScope(decoded.scopes, req) || defaultScope(req)) {
+							next();
+						} else {
+							res.status(401);
+					    res.json({
+					      "status": 401,
+					      "message": "No Access to this scope"
+					    });
+						}
+					}
+				});
 			}
-		});
+		})
+			
 	}
 
 	var defaultScope = function(req) {
@@ -82,8 +97,11 @@ jwtme.authenticate = function(req, res, next) {
 	}
 }
 
-jwtme.destroy = function() {
-	//TODO: Add manual revocation of the tokens
+jwtme.destroy = function(token) {
+	if(token != null) {
+		redisClient.set(token, is_expired: true);
+		redisClient.expire(token, config.get('jwtme.expiresInMinutes')*60)
+	}
 }
 
 jwtme.throttle = function(req, res, next) {
@@ -98,10 +116,6 @@ jwtme.throttle = function(req, res, next) {
 				next();
 			}
 	})
-}
-
-jwtme.refresh = function() {
-	//TODO: Add refreshing function.
 }
 
 module.exports = jwtme;
