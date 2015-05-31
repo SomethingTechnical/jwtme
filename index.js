@@ -14,6 +14,10 @@ app.get('/users', jwtme.authenticate, function (req, res) {
   res.send('Hello World!');
 });
 
+jwtme.events.on("success", function(token, path) {
+	console.log("Auth Success!");
+})
+
 var server = app.listen(3000, "127.0.0.1", function () {
 
   var host = server.address().address;

@@ -3,6 +3,7 @@ var config = require('config');
 var jsonwebtoken = require('jsonwebtoken');
 var _ = require('lodash');
 var redisClient = require("redis").createClient(); //TODO: Use the config file to create redis client
+var EventEmitter = require('events').EventEmitter;
 
 var expiryTime = config.get('jwtme.throttle.expiry') || 86400
 var rate = config.get('jwtme.throttle.rate') || 100
@@ -54,6 +55,7 @@ jwtme.authenticate = function(req, res, next) {
 				    });
 					} else {
 						if(validScope(decoded.scopes, req) || defaultScope(req)) {
+							jwtme.events.emit('success', token, req.route.path)
 							next();
 						} else {
 							res.status(401);
@@ -99,7 +101,7 @@ jwtme.authenticate = function(req, res, next) {
 
 jwtme.destroy = function(token) {
 	if(token != null) {
-		redisClient.set(token, is_expired: true);
+		redisClient.set(token, {is_expired: true})
 		redisClient.expire(token, config.get('jwtme.expiresInMinutes')*60)
 	}
 }
@@ -117,5 +119,7 @@ jwtme.throttle = function(req, res, next) {
 			}
 	})
 }
+
+jwtme.events = new EventEmitter;
 
 module.exports = jwtme;
