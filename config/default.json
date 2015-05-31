@@ -9,8 +9,9 @@
 		}],
 		"defaultscopes": ["/"],
 		"throttle": {
-			"rate": 5,
-			"expiry": 86400
+			"rate": 5
 		}
+	},
+	"redis": {
 	}
 }

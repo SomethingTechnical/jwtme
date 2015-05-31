@@ -2,11 +2,35 @@ var jwtme = {};
 var config = require('config');
 var jsonwebtoken = require('jsonwebtoken');
 var _ = require('lodash');
-var redisClient = require("redis").createClient(); //TODO: Use the config file to create redis client
+
+
+
+if (!config.has('redis.host'))
+	var redisHost = '127.0.0.1';
+else
+	var redisHost = config.get('redis.host');
+
+
+if (!config.has('redis.port'))
+	var redisPort = '6379';
+else
+	var redisHost = config.get('redis.port');
+
+
+
+var redisClient = require("redis").createClient(redisPort, redisHost);
 var EventEmitter = require('events').EventEmitter;
 
-var expiryTime = config.get('jwtme.throttle.expiry') || 86400
-var rate = config.get('jwtme.throttle.rate') || 100
+if (!config.has('jwtme.throttle.expiry'))
+	var expiryTime = '86400';
+else
+	var expiryTime = config.get('jwtme.throttle.expiry');
+
+if (!config.has('jwtme.throttle.rate'))
+	var rate = 100;
+else
+	var rate = config.get('jwtme.throttle.rate');
+
 var throttle = require("tokenthrottle-redis")({rate: rate, expiry: expiryTime}, redisClient);
 
 
@@ -25,7 +49,6 @@ jwtme.authenticate = function(req, res, next) {
 	var token = (req.body && req.body.access_token) || (req.query && req.query.access_token) || req.headers['x-access-token'];
 
 	//TODO: Add customisability to access_token
-	//TODO: Add logging for analytics
 	if (!token) {
 		res.status(401);
     res.json({
